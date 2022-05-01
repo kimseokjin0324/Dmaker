@@ -4,6 +4,7 @@ import com.example.dMaker.service.DMakerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
@@ -22,7 +23,8 @@ public class DMakerController {
         return Arrays.asList("snow", "else", "olaf");
     }
 
-    @GetMapping("/create-developers")
+    //- 일반적으로 데이터를 만드는것은 GET이 아니라 POST이다.
+    @PostMapping("/create-developers")
     public List<String> createDevelopers() {
         log.info("GET/developers HTTP/1.1");
 

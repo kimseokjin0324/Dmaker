@@ -1,5 +1,6 @@
 package com.example.dMaker.service;
 
+import com.example.dMaker.dto.CreateDeveloper;
 import com.example.dMaker.entity.Developer;
 import com.example.dMaker.repository.DeveloperRepository;
 import com.example.dMaker.type.DeveloperLevel;
@@ -8,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.validation.Valid;
 
 //-비지니스 로직 담당
 @Service
@@ -20,7 +23,7 @@ public class DMakerService {
     private final DeveloperRepository developerRepository;  //현 inject 방식
 
     @Transactional
-    public void createDeveloper() {
+    public void createDeveloper(CreateDeveloper.Request request) {
         Developer developer = Developer.builder()
                 .developerLevel(DeveloperLevel.JUNIOR)
                 .developerSkillType(DeveloperSkillType.FRONT_END)

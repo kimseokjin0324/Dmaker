@@ -2,15 +2,18 @@ package com.example.dMaker.service;
 
 import com.example.dMaker.dto.CreateDeveloper;
 import com.example.dMaker.entity.Developer;
+import com.example.dMaker.exception.DMakerException;
 import com.example.dMaker.repository.DeveloperRepository;
 import com.example.dMaker.type.DeveloperLevel;
 import com.example.dMaker.type.DeveloperSkillType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.Valid;
+import java.util.Optional;
+
+import static com.example.dMaker.exception.DMakerErrorCode.DUPLICATED_MEMBER_ID;
+import static com.example.dMaker.exception.DMakerErrorCode.LEVEL_EXPERIENCE_YEARS_NOT_MATCHED;
 
 //-비지니스 로직 담당
 @Service
@@ -24,6 +27,8 @@ public class DMakerService {
 
     @Transactional
     public void createDeveloper(CreateDeveloper.Request request) {
+        validateCreateDeveloperRequest(request);
+
         Developer developer = Developer.builder()
                 .developerLevel(DeveloperLevel.JUNIOR)
                 .developerSkillType(DeveloperSkillType.FRONT_END)
@@ -33,6 +38,35 @@ public class DMakerService {
                 .build();   //-Entity 생성
 
         developerRepository.save(developer);
+    }
+
+    //- business validation을 진행할 메소드
+    private void validateCreateDeveloperRequest(CreateDeveloper.Request request) {
+        DeveloperLevel developerLevel = request.getDeveloperLevel();
+        Integer experienceYears = request.getExperienceYears();
+        if (developerLevel == DeveloperLevel.SENIOR
+                && experienceYears < 10) {
+            throw new DMakerException(LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);  //-CustomException 적용하기
+        }
+
+        if (developerLevel == DeveloperLevel.JUNGNIOR
+                && (experienceYears < 4 || experienceYears > 10)) {
+            throw new DMakerException(LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);  //-CustomException 적용하기
+
+        }
+
+        if (developerLevel == DeveloperLevel.JUNIOR && experienceYears > 4) {
+            throw new DMakerException(LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);  //-CustomException 적용하기
+        }
+
+//        Optional<Developer> developer =
+//                developerRepository.findByMemberId(request.getMemberId());
+//        if (developer.isPresent()) throw new DMakerException(DUPLICATED_MEMBER_ID);
+        //-자바 8부터는 이렇게 한문장으로 위의 코드와 같은 기능을 하는 코드를 작성할 수 있다.
+        developerRepository.findByMemberId(request.getMemberId())
+                .ifPresent((developer -> {
+                    throw new DMakerException(DUPLICATED_MEMBER_ID);
+                }));
     }
 
 }

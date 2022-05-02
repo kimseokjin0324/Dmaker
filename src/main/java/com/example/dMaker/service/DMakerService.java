@@ -1,22 +1,20 @@
 package com.example.dMaker.service;
 
 import com.example.dMaker.dto.CreateDeveloper;
+import com.example.dMaker.dto.DeveloperDetailDto;
 import com.example.dMaker.dto.DeveloperDto;
 import com.example.dMaker.entity.Developer;
 import com.example.dMaker.exception.DMakerException;
 import com.example.dMaker.repository.DeveloperRepository;
 import com.example.dMaker.type.DeveloperLevel;
-import com.example.dMaker.type.DeveloperSkillType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.example.dMaker.exception.DMakerErrorCode.DUPLICATED_MEMBER_ID;
-import static com.example.dMaker.exception.DMakerErrorCode.LEVEL_EXPERIENCE_YEARS_NOT_MATCHED;
+import static com.example.dMaker.exception.DMakerErrorCode.*;
 
 //-비지니스 로직 담당
 @Service
@@ -78,5 +76,12 @@ public class DMakerService {
         return developerRepository.findAll()
                 .stream().map(DeveloperDto::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    public DeveloperDetailDto getDeveloperDetail(String memberId) {
+        return developerRepository.findByMemberId(memberId) //- Optional 타입임
+                .map(DeveloperDetailDto::fromEntity)        //- 아직도 타입은 Optional임
+                .orElseThrow(()-> new DMakerException(NO_DEVELOPER));  //-값이 없을때는 괄호안의 특정 동작을 수행
+
     }
 }

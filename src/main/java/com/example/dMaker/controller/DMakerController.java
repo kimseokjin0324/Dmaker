@@ -29,10 +29,8 @@ public class DMakerController {
     //- 일반적으로 데이터를 만드는것은 GET이 아니라 POST이다.
     //@RequestBody는 http에 담겨져있는 변수에 담는다는 의미이다.
     @PostMapping("/create-developers")
-    public List<String> createDevelopers(@Valid @RequestBody CreateDeveloper.Request request) {
+    public CreateDeveloper.Response createDevelopers(@Valid @RequestBody CreateDeveloper.Request request) {
         log.info("request : {}",request);
-
-        dMakerService.createDeveloper(request);
-        return Arrays.asList("Olaf");
+        return dMakerService.createDeveloper(request);
     }
 }

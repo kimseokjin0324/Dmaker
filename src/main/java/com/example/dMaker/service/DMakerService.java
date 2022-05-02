@@ -26,18 +26,20 @@ public class DMakerService {
     private final DeveloperRepository developerRepository;  //현 inject 방식
 
     @Transactional
-    public void createDeveloper(CreateDeveloper.Request request) {
+    public CreateDeveloper.Response createDeveloper(CreateDeveloper.Request request) {
         validateCreateDeveloperRequest(request);
 
         Developer developer = Developer.builder()
-                .developerLevel(DeveloperLevel.JUNIOR)
-                .developerSkillType(DeveloperSkillType.FRONT_END)
-                .experienceYears(2)
-                .name("Olaf")
-                .age(5)
+                .developerLevel(request.getDeveloperLevel())
+                .developerSkillType(request.getDeveloperSkillType())
+                .experienceYears(request.getAge())
+                .memberId(request.getMemberId())
+                .name(request.getName())
+                .age(request.getAge())
                 .build();   //-Entity 생성
 
         developerRepository.save(developer);
+        return CreateDeveloper.Response.fromEntity(developer);
     }
 
     //- business validation을 진행할 메소드

@@ -1,5 +1,6 @@
 package com.example.dMaker.dto;
 
+import com.example.dMaker.entity.Developer;
 import com.example.dMaker.type.DeveloperLevel;
 import com.example.dMaker.type.DeveloperSkillType;
 import lombok.*;
@@ -30,11 +31,11 @@ public class CreateDeveloper {
         private Integer experienceYears;
 
         @NotNull
-        @Size(min =3,max =50, message = "memberId size must 3 ~ 50")
+        @Size(min = 3, max = 50, message = "memberId size must 3 ~ 50")
         private String memberId;
 
         @NotNull
-        @Size(min =3,max =20, message = "name size must 3 ~ 20")
+        @Size(min = 3, max = 20, message = "name size must 3 ~ 20")
         private String name;
 
         @Min(18)
@@ -53,5 +54,13 @@ public class CreateDeveloper {
         private Integer experienceYears;
         private String memberId;
 
+        public static Response fromEntity(Developer developer) {
+            return Response.builder()
+                    .developerLevel(developer.getDeveloperLevel())
+                    .developerSkillType(developer.getDeveloperSkillType())
+                    .experienceYears(developer.getExperienceYears())
+                    .memberId(developer.getMemberId())
+                    .build();
+        }
     }
 }

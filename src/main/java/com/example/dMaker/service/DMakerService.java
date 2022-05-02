@@ -3,6 +3,7 @@ package com.example.dMaker.service;
 import com.example.dMaker.dto.CreateDeveloper;
 import com.example.dMaker.dto.DeveloperDetailDto;
 import com.example.dMaker.dto.DeveloperDto;
+import com.example.dMaker.dto.EditDeveloper;
 import com.example.dMaker.entity.Developer;
 import com.example.dMaker.exception.DMakerException;
 import com.example.dMaker.repository.DeveloperRepository;
@@ -45,22 +46,7 @@ public class DMakerService {
 
     //- business validation을 진행할 메소드
     private void validateCreateDeveloperRequest(CreateDeveloper.Request request) {
-        DeveloperLevel developerLevel = request.getDeveloperLevel();
-        Integer experienceYears = request.getExperienceYears();
-        if (developerLevel == DeveloperLevel.SENIOR
-                && experienceYears < 10) {
-            throw new DMakerException(LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);  //-CustomException 적용하기
-        }
-
-        if (developerLevel == DeveloperLevel.JUNGNIOR
-                && (experienceYears < 4 || experienceYears > 10)) {
-            throw new DMakerException(LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);  //-CustomException 적용하기
-
-        }
-
-        if (developerLevel == DeveloperLevel.JUNIOR && experienceYears > 4) {
-            throw new DMakerException(LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);  //-CustomException 적용하기
-        }
+        validateDeveloperLevel(request.getDeveloperLevel(), request.getExperienceYears());
 
 //        Optional<Developer> developer =
 //                developerRepository.findByMemberId(request.getMemberId());
@@ -81,7 +67,48 @@ public class DMakerService {
     public DeveloperDetailDto getDeveloperDetail(String memberId) {
         return developerRepository.findByMemberId(memberId) //- Optional 타입임
                 .map(DeveloperDetailDto::fromEntity)        //- 아직도 타입은 Optional임
-                .orElseThrow(()-> new DMakerException(NO_DEVELOPER));  //-값이 없을때는 괄호안의 특정 동작을 수행
+                .orElseThrow(() -> new DMakerException(NO_DEVELOPER));  //-값이 없을때는 괄호안의 특정 동작을 수행
 
+    }
+
+    @Transactional
+    public DeveloperDetailDto editDeveloper(String memberId, EditDeveloper.Request request) {
+        validateEditDeveloperRequest(request, memberId);
+
+        Developer developer = developerRepository.findByMemberId(memberId).orElseThrow(
+                () -> new DMakerException(NO_DEVELOPER)
+        );
+
+        //-entity에 값수정하기 -> 이러면 Entity에만 수정되고 실제로는 수정이 안됨
+        //-> @Transactional 키워드를 통해 editDeveloper메소드에 들어가기전 transaction을 시작했다가
+        //-entity에 값을 바꿔준다음 변경 사항들을 commit이 되기로 한다.
+        developer.setDeveloperLevel(request.getDeveloperLevel());
+        developer.setDeveloperSkillType(request.getDeveloperSkillType());
+        developer.setExperienceYears(request.getExperienceYears());
+
+        return DeveloperDetailDto.fromEntity(developer);
+
+    }
+
+    private void validateEditDeveloperRequest(EditDeveloper.Request request, String memberId) {
+        validateDeveloperLevel(request.getDeveloperLevel(), request.getExperienceYears());
+
+    }
+
+    private void validateDeveloperLevel(DeveloperLevel developerLevel, Integer experienceYears) {
+        if (developerLevel == DeveloperLevel.SENIOR
+                && experienceYears < 10) {
+            throw new DMakerException(LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);  //-CustomException 적용하기
+        }
+
+        if (developerLevel == DeveloperLevel.JUNGNIOR
+                && (experienceYears < 4 || experienceYears > 10)) {
+            throw new DMakerException(LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);  //-CustomException 적용하기
+
+        }
+
+        if (developerLevel == DeveloperLevel.JUNIOR && experienceYears > 4) {
+            throw new DMakerException(LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);  //-CustomException 적용하기
+        }
     }
 }

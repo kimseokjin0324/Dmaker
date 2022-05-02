@@ -20,10 +20,10 @@ public class DMakerController {
     private final DMakerService dMakerService;
 
     @GetMapping("/developers")
-    public List<DeveloperDto> getAllDevelopers() {
+    public List<DeveloperDto> getAllEmployedDevelopers() {
         log.info("GET/developers HTTP/1.1");
 
-        return dMakerService.getAllDevelopers();
+        return dMakerService.getAllEmployedDevelopers();
     }
 
     @GetMapping("/developer/{memberId}")
@@ -46,6 +46,13 @@ public class DMakerController {
                                             @Valid @RequestBody EditDeveloper.Request request) {
         log.info("GET/developers HTTP/1.1");
 
-        return dMakerService.editDeveloper(memberId,request);
+        return dMakerService.editDeveloper(memberId, request);
+    }
+
+    @DeleteMapping("/developer/{memberId}")
+    public DeveloperDetailDto deleteDeveloper(@PathVariable String memberId) {
+        log.info("GET/developers HTTP/1.1");
+
+        return dMakerService.deleteDeveloper(memberId);
     }
 }

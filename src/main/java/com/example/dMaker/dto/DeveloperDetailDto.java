@@ -1,5 +1,6 @@
 package com.example.dMaker.dto;
 
+import com.example.dMaker.code.StatusCode;
 import com.example.dMaker.entity.Developer;
 import com.example.dMaker.type.DeveloperLevel;
 import com.example.dMaker.type.DeveloperSkillType;
@@ -17,6 +18,7 @@ public class DeveloperDetailDto {
     private Integer experienceYears;    //-경력
     private String memberId;            //-회사의 특정한 멤버아이디
     private String name;                //-이름
+    private StatusCode statusCode;
     private Integer age;                //-나이
 
     public static DeveloperDetailDto fromEntity(Developer developer) {
@@ -27,6 +29,7 @@ public class DeveloperDetailDto {
                 .experienceYears(developer.getExperienceYears())
                 .memberId(developer.getMemberId())
                 .name(developer.getName())
+                .statusCode(developer.getStatusCode())
                 .age(developer.getAge())
                 .build();
     }

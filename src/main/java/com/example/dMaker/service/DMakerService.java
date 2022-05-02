@@ -1,12 +1,15 @@
 package com.example.dMaker.service;
 
+import com.example.dMaker.code.StatusCode;
 import com.example.dMaker.dto.CreateDeveloper;
 import com.example.dMaker.dto.DeveloperDetailDto;
 import com.example.dMaker.dto.DeveloperDto;
 import com.example.dMaker.dto.EditDeveloper;
 import com.example.dMaker.entity.Developer;
+import com.example.dMaker.entity.RetiredDeveloper;
 import com.example.dMaker.exception.DMakerException;
 import com.example.dMaker.repository.DeveloperRepository;
+import com.example.dMaker.repository.RetiredDeveloperRepository;
 import com.example.dMaker.type.DeveloperLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +28,8 @@ public class DMakerService {
     //    @Autowired  //-구방식 서비스를 단독으로 테스트 하고싶어도 어려워지는 어려움이 있었다.
     // 그이후로 Service의 생성자에 Repository를 매개변수로 받아 주입하는 방식이 나왔다
     // 이경우 repository가 여러개일경우 생성자를 고쳐야하는 상황이 있을때 매우 번거럽다고 함
-    private final DeveloperRepository developerRepository;  //현 inject 방식
+    private final DeveloperRepository developerRepository;
+    private final RetiredDeveloperRepository retiredDeveloperRepository;  //현 inject 방식
 
     @Transactional
     public CreateDeveloper.Response createDeveloper(CreateDeveloper.Request request) {
@@ -37,6 +41,7 @@ public class DMakerService {
                 .experienceYears(request.getAge())
                 .memberId(request.getMemberId())
                 .name(request.getName())
+                .statusCode(StatusCode.EMPLOYED)
                 .age(request.getAge())
                 .build();   //-Entity 생성
 
@@ -58,8 +63,8 @@ public class DMakerService {
                 }));
     }
 
-    public List<DeveloperDto> getAllDevelopers() {
-        return developerRepository.findAll()
+    public List<DeveloperDto> getAllEmployedDevelopers() {
+        return developerRepository.findDevelopersByStatusCodeEquals(StatusCode.EMPLOYED)
                 .stream().map(DeveloperDto::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -110,5 +115,26 @@ public class DMakerService {
         if (developerLevel == DeveloperLevel.JUNIOR && experienceYears > 4) {
             throw new DMakerException(LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);  //-CustomException 적용하기
         }
+    }
+
+    @Transactional
+    public DeveloperDetailDto deleteDeveloper(String memberId) {
+        Developer developer = developerRepository.findByMemberId(memberId).orElseThrow(
+                () -> new DMakerException(NO_DEVELOPER));
+        // 1. EMPLOYED -> RETIRED
+        developer.setStatusCode(StatusCode.RETIRED);    //-상태변화가 일어났기때문에 하나의 작업을 transaction에 예약을 해둔상태이다
+
+
+        if (developer != null) throw new DMakerException(NO_DEVELOPER);
+
+        //make RetiredDeveloper Entity
+        RetiredDeveloper retiredDeveloper = RetiredDeveloper.builder()
+                .memberId(developer.getMemberId())
+                .name(developer.getName())
+                .build();
+        // 2. save into RetiredDeveloper
+        retiredDeveloperRepository.save(retiredDeveloper);
+
+        return DeveloperDetailDto.fromEntity(developer);
     }
 }

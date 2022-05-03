@@ -1,15 +1,15 @@
 # 개발자 키우기 프로젝트
 본 포스트는 패스트캠퍼스 강의 프로젝트를 만든것이다
 > # 개발자키우기 환경설정  
-Language: Java(11)  
-Project : Gradle Project  
-Spring boot: 2.6.7  
-Dependencies: Lombok  
-Spring Web  
-H2 Database( 로컬 H2데이터베이스로 DB를 만드는 방법을 알아보자)  
-Spring Data JPA (H2데이터베이스에 접근하기 위해 JPA를 사용)  
-Validation( Bean Validation을 추가해주는 라이브러리를 추가)  
-![image](https://user-images.githubusercontent.com/85244656/166393734-740263da-5698-44b0-96c0-e54b82bb5f87.png)
+> Language: Java(11)  
+> Project : Gradle Project  
+> Spring boot: 2.6.7  
+> Dependencies: Lombok  
+> Spring Web  
+> H2 Database( 로컬 H2데이터베이스로 DB를 만드는 방법을 알아보자)  
+> Spring Data JPA (H2데이터베이스에 접근하기 위해 JPA를 사용)  
+> Validation( Bean Validation을 추가해주는 라이브러리를 추가)  
+> ![image](https://user-images.githubusercontent.com/85244656/166393734-740263da-5698-44b0-96c0-e54b82bb5f87.png)
 
 
 ## 진행상황

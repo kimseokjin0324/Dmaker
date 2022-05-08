@@ -38,7 +38,7 @@ public class DMakerService {
         Developer developer = Developer.builder()
                 .developerLevel(request.getDeveloperLevel())
                 .developerSkillType(request.getDeveloperSkillType())
-                .experienceYears(request.getAge())
+                .experienceYears(request.getExperienceYears())
                 .memberId(request.getMemberId())
                 .name(request.getName())
                 .statusCode(StatusCode.EMPLOYED)
